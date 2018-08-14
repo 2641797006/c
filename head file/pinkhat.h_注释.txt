@@ -1,0 +1,63 @@
+# -*- coding: UTF-8 -*-
+# pinkhat.h  helper
+# pinkhat.h版本: 2018.07.25.0
+# 持续更新中...
+# pinkhat.h 在gcc下编译通过
+# 如发现错误, 或者有所建议, 您可以通过邮箱 " yongxxone@gmail.com " 联系我们
+
+# This is not a C source file.
+
+///*******************************************************************************///
+
+double pinkt();
+long pwait(int n);
+char pause(int n, ...);
+int prand(int n);
+int wce(FILE* fp,char* str);
+int wcd(FILE* fp,char* str);
+
+///*******************************************************************************///
+
+double pinkt();
+	pinkt()返回1970年1月1日0点到现在的时间(单位/秒), 小数部分精确至微秒(貌似精确)
+
+long pwait(int n);
+	等待n毫秒;  如 pwait(1000)函数将在一秒之后返回, 若 n<=0 则返回PEOF
+
+char pause(int n, ...);
+	pause(0, double t0);  建议在main函数开头取时间t0=pinkt(), 下方数字为t0与本函数执行时的时间差
+		输出"	--------------------------------
+			Process exited after 7.777456 seconds
+			Please press any key to continue. . ."
+		接收到按键消息后返回从键盘接收到的值(不回显)
+
+	pause(1, double t0, int v); 增加了"返回值v" 若v=666666 则
+		输出"	--------------------------------
+			Process exited after 7.777456 seconds with return value 666666
+			Please press any key to continue. . ."
+		接收到按键消息后返回从键盘接收到的值(不回显)
+
+	pause(2); do nothing 	接收到按键消息后返回从键盘接收到的值(回显)
+	pause(3); do nothing	接收到按键消息后返回从键盘接收到的值(不回显)
+	pause(4,"gj"); 关机
+	pause(4,"cq"); 重启
+	pause(4,"xm"); 休眠(保留所有工作)
+	pause(4,"gjcq"); 高级重启
+	pause(PEOF); 卡死不解释
+
+int prand(int n);
+	prand(n)随机返回集合[0,n)中的一个整数, 若n为负数则返回值也为负数
+
+int wce(FILE* fp,char* str);
+	wce(fp,str)向文件fp中加密写入数据(字符串*str), 字符串不超过 222 个字符, 且以'\0'结尾
+	返回fp位移(byte), 写入失败则返回PEOF
+
+int wcd(FILE* fp,char* str);
+	wcd(fp,str)从文件fp中读取wce加密的数据, fp指向加密数据的第一个字节,
+	解密后的内容将存入字符串*str中, 字符串以'\0'结尾;
+	返回fp位移(byte), 读取失败则返回PEOF
+
+//////////////
+# 非简单模式 :
+//	在 #include <pinkhat.h> 前加入 " #define PNEASY " 行
+//	若如此做: 则以上所有函数都要在前面加'P' 如 func(); 变为 Pfunc();

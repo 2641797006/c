@@ -36,10 +36,10 @@ int main(){
 		return -3;
 	pmkdir(filepath, ps, dir, 1);
 	strcat(filepath, "/.wh");
-	fp=fopen(filepath, "r");
+	fp=fopen(filepath, "rb");
 	if(!fp)
 		return -4;
-	ret=fread(&_wh, 96, 1, fp);
+	ret=fread(&_wh, sizeof(_WH), 1, fp);
 	fclose(fp);
 	if(ret!=1)
 		return -5;

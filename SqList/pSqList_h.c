@@ -1,4 +1,4 @@
-
+ 
 注意: 此处将ElemType当作数字处理, 不考虑其他数据类型
 
 typedef struct{

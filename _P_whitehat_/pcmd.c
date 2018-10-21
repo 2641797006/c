@@ -4,53 +4,54 @@
 #include <unistd.h>
 #include <string.h>
 #include <__pink/pinkwin.h>
+#include <__pink/pfile.h>
+#include <__pink/pstruct.h>
 //#include <__pink/phttp.h>
 
 #ifndef __PINK__
-#define __PINK__ 	-0x50494E4BL
+#define __PINK__	-0x50494E4BL
 #endif
 
-int dofunc();
-int create_wh();
+void pset_wh(_WH* _wh);
+int dofunc(char* filepath);
 
 int main(){
-	int ret=dofunc();
-	if( ret!=0 )
-		printf("Error::ret=%d\n", ret);
+	char *fileindex=getenv("PUBLIC"), *GlobalBuffer=(char*)malloc(1024), *filepath=GlobalBuffer;
+	char *dir[2]={"/_P_WhiteHat_", "/.wh"};
+	if(!GlobalBuffer)
+		return -1;
+	pmkdir(filepath, fileindex, dir, 1);
+	strcat(filepath, dir[1]);
+	dofunc(filepath);
 	return 0;
 }
 
-int dofunc()
+int dofunc(char* filepath)
 {
 	FILE* fp;
-	int flag;
-	if(access(".wh", F_OK))
-		create_wh();
+	_WH _wh;
+	pset_wh(&_wh);
+	if(access(filepath, F_OK))
+		pfile_wb(filepath, &_wh, 96);
 	else{
-		fp=fopen(".wh", "rb+");
+		fp=fopen(filepath, "rb+");
 		if(!fp)
-			return -10;
-		if( fread(&flag, 4, 1, fp)!=1 )
-			return -11;
-		if(flag!=__PINK__){
+			return -1;
+		if( fread(&_wh, 96, 1, fp)!=1 )
+			_wh.flag=-1;
+		if(_wh.flag!=__PINK__){
 			fclose(fp);
-			create_wh();
-			return -12;
+			pset_wh(&_wh);
+			pfile_wb(filepath, &_wh, 96);
+			return -2;
 		}
 	}
 	return 0;
 }
 
-int create_wh()
+void pset_wh(_WH* _wh)
 {
-	FILE* fp;
-	fp=fopen(".wh", "wb");
-	if(!fp)
-		return -1;
-	int flag=__PINK__;
-	if( fwrite(&flag, 4, 1, fp)!=1 ){
-		fclose(fp);
-		return -2;
-	}
-	return 0;
+	_wh->flag=__PINK__;
+	_wh->version=101;
+	strcpy(_wh->word, "\r\nThis file is use for pcmd.exe!\r\nversion : 1.01\r\n");
 }

@@ -71,11 +71,31 @@
 #endif
 
 #define pWinhttpCloseHandle(hSession, hConnect, hRequest)\
-		if(hRequest) WinHttpCloseHandle(hRequest);\
-		if(hConnect) WinHttpCloseHandle(hConnect);\
-		if(hSession) WinHttpCloseHandle(hSession);
+		hRequest && WinHttpCloseHandle(hRequest);\
+		hConnect && WinHttpCloseHandle(hConnect);\
+		hSession && WinHttpCloseHandle(hSession);
 
-
+DWORD pDownload(wchar_t* domain_ip, wchar_t* _file_url, char* localfilepath)
+{
+	FILE* fp;
+	HINTERNET hSession, hConnect, hRequest;
+	pWinHttpOpen(hSession);
+		__ReturnError();
+	pWinHttpConnect(hConnect, hSession, domain_ip);
+		__ReturnError();
+	pWinHttpOpenRequest(hRequest, hConnect, _file_url);
+		__ReturnError();
+	pWinHttpSendRequest(hRequest);
+		__ReturnError();
+	pWinHttpReceiveResponse(hRequest);
+		__ReturnError();
+	fp=fopen(localfilepath, "wb");
+	pWinHttpLoopRead(hRequest, fp);
+	int ret=GetLastError();
+	fclose(fp);
+	pWinhttpCloseHandle(hSession, hConnect, hRequest);
+	return ret;
+}
 
 
 

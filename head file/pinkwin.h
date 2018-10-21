@@ -91,7 +91,6 @@
 
 #define pinkwinA() pWinClass(_P_win_class_,"_P_pink_value_");\
 		pinkwin(){\
-			hInst=hInstance;\
 			pinkwc(wc,_P_win_class_,PI_WH,pRGB(0x2095f3));\
 			pRegisterClass(wc);\
 			HWND hwnd;\
@@ -144,15 +143,22 @@ void pReportErrorFunc(HWND hwnd, int pErrorCode, int ErrorCodeID, int CodeID_x)
 			pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID,CodeID_x);\
 	}
 
+#define __ReturnError(){\
+		int pErrorCode=GetLastError();\
+		if(pErrorCode!=0)\
+			return pErrorCode;\
+	}
+
 #define pCoutInt(value){\
 		char s[32];\
 		sprintf(s,"value=%d, hex=0x%X",(int)(value), (int)(value));\
-		MessageBox(hwnd,s,"pCoutInt(value)",MB_OK);\
+		MessageBox(NULL,s,"pCoutInt(value)",MB_OK);\
 	}
 
 #define pCoutDouble(value){\
+		char s[64];\
 		sprintf(s,"value=%Lf",(double)(value));\
-		MessageBox(hwnd,s,"pCoutDouble(value)",MB_OK);\
+		MessageBox(NULL,s,"pCoutDouble(value)",MB_OK);\
 	}
 
 #define pCoutStr(string)		MessageBox(NULL,string,"pCoutStr(string)",MB_OK)
@@ -254,5 +260,7 @@ void pReportErrorFunc(HWND hwnd, int pErrorCode, int ErrorCodeID, int CodeID_x)
 #define pAtoW(a,w,len) swprintf(w, len, L"%S", a)
 #define pWtoA(w,a,len) sprintf(a, len, "%s", w)
 #endif
+
+#define pCreateThread(FuncProc, param) CreateThread(NULL, 0, FuncProc, param, 0, NULL);
 
 #endif

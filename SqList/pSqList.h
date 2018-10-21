@@ -69,7 +69,7 @@ int rInitList(SqList* L, int size)
 	return 0;
 }
 
-void DestoryList(SqList* L)
+void DestroyList(SqList* L)
 {
 	free(L->elem);
 	L->length=0;

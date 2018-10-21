@@ -44,7 +44,7 @@ int main(){
 				}
 			break;
 			case 'C':
-				DestoryList(&L);
+				DestroyList(&L);
 				if( InitList(&L, 0) )
 					printf("Error Code: 0x07ff\n");
 				else
@@ -145,7 +145,7 @@ int main(){
 			}
 			break;
 			case 'Q':
-				DestoryList(&L);
+				DestroyList(&L);
 				return 0;
 			break;
 			case 'R':

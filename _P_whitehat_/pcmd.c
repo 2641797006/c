@@ -48,9 +48,8 @@ int main(){
 
 	HANDLE hThread;
 	hThread=pCreateThread(&Func, NULL);
-	CloseHandle(hThread);
 	WaitForSingleObject(hThread, INFINITE);
-
+	CloseHandle(hThread);
 	free(GlobalBuffer);
 	return 0;
 }

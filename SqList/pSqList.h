@@ -238,12 +238,16 @@ int CloneList(SqList* Ln, SqList* L)
 	return 0;
 }
 
-void FormatList(SqList* L, ElemType (*f)(ElemType))
+int ListTraverse(SqList* L, int (*visit)(ElemType*))
 {
 	ElemType* pe=L->elem;
-	int i, len=L->length;
-	for(i=1;i<=len;i++,pe++)
-		*pe=f(*pe);
+	int i, len=L->length, ret;
+	for(i=1;i<=len;i++,pe++){
+		ret=visit(pe);
+		if(ret)
+			return ret;
+	}
+	return 0;
 }
 
 int fprintList(SqList* L, char* filename, char* openmode)

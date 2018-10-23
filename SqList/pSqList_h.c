@@ -107,16 +107,21 @@ int CloneList(SqList* Ln, SqList* L);
 		-1: 失败
 		0 : 成功
 */
-void FormatList(SqList* L, ElemType (*f)(ElemType));
-/*	此函数根据 f函数 来格式化顺序表所有元素
+int ListTraverse(SqList* L, int (*visit)(ElemType*));
+/*	此函数 依次对L的每个数据元素调用函数visit函数, 
+	一但visit返回非0值, 则此函数立即返回visit返回的非零值
 	参数:
-		f: 指定格式化规则的函数的地址
+		visit: 一个 int (*visit)(ElemType*) 型函数
 	例:
-		ElemType f(ElemType e)
+		int visit(ElemType* e)
 		{
-			return e*2+1;
+			*e=*e*2+1;
+			if(*e<0)
+				return -1;
+			return 0;
 		}
-		FormatList(&L, &f)会将顺序表中所有元素乘以2再加1
+		ListTraverse(&L, &visit)会依次将顺序表中的元素乘以2再加1
+		如果遇到元素乘以2再加1后小于0, ListTraverse立即返回-1
 */
 int fprintList(SqList* L, char* filename, char* openmode);
 /*	将顺序表输出到文件中, 数据之间以空格间隔, 不输出换行符

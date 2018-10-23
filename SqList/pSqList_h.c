@@ -68,11 +68,11 @@ int ListInsert(SqList* L, int i, ElemType e);
 		0 : 添加元素成功
 */
 int ListDelete(SqList* L, int i, ElemType* pea);
-/*	此函数删除顺序表中的数据, 不会释放顺序表分配的空间
+/*	此函数删除顺序表中的数据, 并通过pea返回删除的值. (此函数不会释放顺序表分配的空间)
 	参数:
 		L: 指向SqList结构的指针
 		i: 指定要删除数据的位置
-		e: ElemType类型数值
+		pea: 指向ElemType类型数值的指针, 删除的数据将存储在pea指向的位置
 	返回值:
 		-1: 位置错误
 		0 : 删除元素成功

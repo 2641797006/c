@@ -8,6 +8,23 @@ typedef struct{
 }SqList;
 
 int InitList(SqList* L, int size);
+int rInitList(SqList* L, int size);
+void DestroyList(SqList* L);
+ElemType* LocateElem(SqList* L, ElemType e);
+ElemType* ListAmend(SqList* L, ElemType e, ElemType e1);
+int ListInsert(SqList* L, int i, ElemType e);
+int ListDelete(SqList* L, int i, ElemType* pea);
+void PrintList(SqList* L);
+void PrintListInfo(SqList* L);
+void SortList(SqList* L);
+int MessList(SqList* L);
+void ReverseList(SqList* L);
+int CloneList(SqList* Ln, SqList* L);
+int ListTraverse(SqList* L, int (*visit)(ElemType*));
+int fprintList(SqList* L, char* filename, char* openmode);
+int fscanList(SqList* L, char* filename, char* openmode);
+
+int InitList(SqList* L, int size);
 /*	此函数为顺序表分配空间
 	参数:
 		L: 指向SqList结构的指针

@@ -125,7 +125,7 @@ int CloneList(SqList* Ln, SqList* L);
 		0 : 成功
 */
 int ListTraverse(SqList* L, int (*visit)(ElemType*));
-/*	此函数 依次对L的每个数据元素调用函数visit函数, 
+/*	此函数 依次对L的每个数据元素调用visit函数, 
 	一但visit返回非0值, 则此函数立即返回visit返回的非零值
 	参数:
 		visit: 一个 int (*visit)(ElemType*) 型函数

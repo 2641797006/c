@@ -1,7 +1,7 @@
 //以下将ElemType作数字处理
 #include <stdio.h>
 #include <stdlib.h>
-#include <c:/users/26417/desktop/datas/pSqList.h>
+#include <c:/users/26417/desktop/LNode/pLNode.h>
 
 void menu();
 void menux();
@@ -11,13 +11,11 @@ void pfname(char** pps);
 
 int main(){
 	int i;
-	SqList L;
+	LNode L;
 	menu();
-	if( InitList(&L, 100) )
-		printf("First init Error\n");
+	InitList(&L, 0);
 	for(i=0;i<100;i++)
-		*(L.elem+i)=i;
-	L.length=100;
+		ListInsert(&L, i+1, i);
 	ungetc('\n', stdin);
 	while(1)
 	{
@@ -28,38 +26,28 @@ int main(){
 		switch(i)
 		{
 			case 'A':
-				if(L.length<1)
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<1)
+					printf("链表中没有数据\n");
 				else
 					PrintList(&L);
 			break;
 			case 'B':
-				if( rInitList(&L, 100) )
-					printf("Init Error\n");
-				else{
-					L.length=100;
-					for(i=0;i<100;i++)
-						*(L.elem+i)=i;
-					PrintList(&L);
-				}
+					PrintListX(&L);
 			break;
 			case 'C':
 				DestroyList(&L);
-				if( InitList(&L, 0) )
-					printf("Error Code: 0x07ff\n");
-				else
-					printf("顺序表已清空\n");
+				printf("链表已清空\n");
 			break;
 			case 'D':
 			{
 				ElemType e;
-				if(L.length==0){
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<1){
+					printf("链表中没有数据\n");
 					break;
 				}
 				printf("请输入要删除的元素位置: ");
 				scanf("%*[^0-9]%d%*[^\n]", &i);
-				if( ListDelete(&L, i, &e) )
+				if( !ListDelete(&L, i, &e) )
 					printf("位置错误: %d\n", i);
 				else
 					printf("已删除第%d个元素%d\n", i, e);
@@ -67,17 +55,13 @@ int main(){
 			break;
 			case 'E':
 			{
-				int r;
 				ElemType e;
 				printf("请输入要增加元素的位置: ");
 				scanf("%*[^0-9]%d%*[^\n]", &i);
 				printf("然后输入新增元素的值: ");
 				scanf("%*[^0-9]%d%*[^\n]", &e);
-				r=ListInsert(&L, i, e);
-				if(r==-1)
-					printf("位置错误: %d\n", i);
-				else if(r==-2)
-					printf("内存错误, 增加元素失败\n");
+				if( !ListInsert(&L, i, e) )
+					printf("增加元素时发生错误\n");
 				else
 					printf("已在第%d位置插入元素%d\n", i, e); 
 			}
@@ -85,18 +69,18 @@ int main(){
 			case 'F':
 			{
 				int num=0;
-				SqList L1=L;
-				ElemType* pe, e;
+				LNode* Ln=&L;
+				ElemType e;
 				printf("请输入要查找元素的值: ");
 				scanf("%*[^0-9]%d%*[^\n]", &e);
-				while(L1.length>0){
-					pe=LocateElem(&L1, e);
-					if(!pe)
+				while(Ln->next){
+					Ln=LocateElem(Ln, e);
+					if(!Ln)
 						break;
 					else{
-						printf("第%d个, ", ++pe-L.elem);
-						L1.length-=(pe-L1.elem);
-						L1.elem=pe;
+						i=ListLength(&L)-ListLength(Ln);
+						printf("第%d个, ", i);
+
 						num++;
 					}
 				}
@@ -121,12 +105,18 @@ int main(){
 				menux();
 				printf("\n");
 			break;
+			case 'I':
+				DestroyList(&L);
+				for(i=0;i<100;i++)
+					ListInsert(&L, ListLength(&L)+1, i);
+				PrintList(&L);
+			break;
 			case 'K':
 				system("cls");
 			break;
 			case 'M':
-				if(L.length<1){
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<2){
+					printf("链表中数据不超过一个\n");
 					break;
 				}
 				if( MessList(&L) )
@@ -136,8 +126,8 @@ int main(){
 			break;
 			case 'N':
 			{
-				if(L.length<2){
-					printf("顺序表中数据不超过一个\n");
+				if(ListLength(&L)<2){
+					printf("链表中数据不超过一个\n");
 					break;
 				}
 				ReverseList(&L);
@@ -160,8 +150,8 @@ int main(){
 			}
 			break;
 			case 'S':
-				if(L.length<1){
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<2){
+					printf("链表中数据不超过一个\n");
 					break;
 				}
 				SortList(&L);
@@ -169,15 +159,16 @@ int main(){
 			break;
 			case 'V':
 			{
-				if(L.length<1){
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<1){
+					printf("链表中没有数据\n");
 					break;
 				}
-				ElemType* pe=L.elem+L.length-1, e;
-				printf("请输入用来格式化顺序表的值: ");
+				LNode* p=&L;
+				ElemType e;
+				printf("请输入用来格式化链表的值: ");
 				scanf("%*[^0-9]%d%*[^\n]", &e);
-				while(pe>=L.elem)
-					*pe--=e;
+				while(p=p->next)
+					p->data=e;
 				PrintList(&L);
 			}
 			break;
@@ -194,22 +185,18 @@ int main(){
 			break;
 			case 'X':
 			{
-				if(L.length<1){
-					printf("顺序表中没有数据\n");
+				if(ListLength(&L)<1){
+					printf("链表中没有数据\n");
 					break;
 				}
-				int p, q;
-				ElemType* pe=L.elem;
-				for(i=0;i<L.length;i++){
-					p=prand()%300/100;
-					q=10*((p+9)/10*9+1)*((p+8)/10*9+1);
-					*pe++=prand()%q;
+				LNode* p=&L;
+				while(p=p->next){
+					i=prand()%320/100;
+					i=10*((i+9)/10*9+1)*((i+8)/10*9+1);
+					p->data=prand()%i;
 				}
 				PrintList(&L);
 			}
-			break;
-			case 'Y':
-				PrintListInfo(&L);
 			break;
 			case 'Z':
 			{
@@ -218,8 +205,8 @@ int main(){
 				while( scanf("%Lf", &v)>0 ){
 					if(v!=(int)v)
 						break;
-					if( ListInsert(&L, L.length+1, v) )
-						printf("内存错误\n");
+					if( !ListInsert(&L, ListLength(&L)+1, v) )
+						printf("插入元素失败\n");
 				}
 				scanf("%*[^\n]");
 			}
@@ -236,7 +223,7 @@ int main(){
 
 void menu()
 {
-	printf("\nA.输出顺序表  B.初始化设置100个数据  C.clear清空  D.删除元素  E.添加元素  F.查找元素  G.修改元素  H.更多  K.清屏  Q.退出\n请选择: ");
+	printf("\nA.输出链表  B.详细输出  C.clear清空  D.删除元素  E.添加元素  F.查找元素  G.修改元素  H.更多  K.清屏  Q.退出\n请选择: ");
 }
 
 void menux()
@@ -245,8 +232,8 @@ void menux()
 S.sort排序        M.mess乱序\n\
 R.从文件读取数据  W.向文件输出数据\n\
 X.随机赋值        V.全部元素赋值为\n\
-Y.输出顺序表参数  N.倒置顺序表\n\
-Z.手动输入顺序表");
+Z.手动输入链表    N.倒置链表\n\
+I.初始化设置100个数据");
 
 }
 

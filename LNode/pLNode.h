@@ -25,6 +25,8 @@
 #endif
 //ElemType is a Number
 
+unsigned int _PLNODE_;
+
 typedef struct LNode{
 	ElemType data;
 	struct LNode* next;

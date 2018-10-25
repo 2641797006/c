@@ -9,6 +9,17 @@
 #endif
 //malloc(), realloc(), free()
 
+#ifndef _INC_STRING
+#include <string.h>
+#ifndef _INC_STRING
+#define _INC_STRING
+#endif
+#endif
+
+#ifndef _PRAND_H_
+#include <__pink/prand.h>
+#endif
+
 #ifndef ElemType
 #define ElemType int
 #endif
@@ -231,15 +242,127 @@ void SortList(LNode* L)
 	GetElem(L, length, NULL)->next=NULL;
 }
 
+int MessList(LNode* L)
+{
+	LNode* p=L->next;
+	ElemType *a, *b;
+	int len=ListLength(L);
+	a=(ElemType*)malloc(len*sizeof(ElemType));
+	b=(ElemType*)malloc(len*sizeof(ElemType));
+	if(!a||!b)
+		return -1;
+	memset(b,0,len*sizeof(ElemType));
+	int f(int x)
+	{
+		return x;
+	}
+	pranda(a, len, &f);
+	int i, j;
+	for(i=0;i<len;i++){
+		for(j=i+1;j<len;j++)
+			if(*(a+i)>*(a+j))
+				(*(b+i))++;
+			else
+				(*(b+j))++;
+		*(a+i)=GetElem(L, *(b+i)+1, NULL)->data;
+	}
+	for(i=0;i<len;i++){
+		p->data=*(a+i);
+		p=p->next;
+	}
+	free(a);
+	free(b);
+	return 0;
+}
 
+void ReverseList(LNode* L)
+{
+	LNode *p, *q, *r;
+	p=L->next;
+	if(!p)
+		return;
+	q=p->next;
+	if(!q)
+		return;
+	p->next=NULL;
+	r=q->next;
+	while(r){
+		q->next=p;
+		p=q;
+		q=r;
+		r=r->next;
+	}
+	L->next=q;
+	q->next=p;
+}
 
+int CloneList(LNode* Ln, LNode* L)
+{
+	if( InitList(Ln, ListLength(L)) ){
+		DestroyList(Ln);
+		return -1;
+	}
+	while(Ln=Ln->next){
+		L=L->next;
+		Ln->data=L->data;
+	}
+	return 0;
+}
 
+int ListTraverse(LNode* L, int (*visit)(ElemType*))
+{
+	int ret;
+	while(L=L->next){
+		ret=visit(&L->data);
+		if(ret)
+			return ret;
+	}
+	return 0;
+}
 
+int fprintList(LNode* L, char* filename, char* openmode)
+{
+	FILE* fp;
+	fp=fopen(filename, openmode);
+	if(!fp)
+		return ferror(fp);
+	if(strchr(openmode, 'b'))
+		while(L=L->next){
+			if( fwrite(&L->data, sizeof(ElemType), 1, fp)<=0 )
+				return ferror(fp);
+		}
+	else
+		while(L=L->next)
+			if( fprintf(fp,"%d ",L->data)<=0 )
+				return ferror(fp);
+	if(fclose(fp))
+		return ferror(fp);
+	return -520;
+}
 
-
-
-
-
-
+int fscanList(LNode* L, char* filename, char* openmode)
+{
+	FILE* fp;
+	ElemType e;
+	int len=ListLength(L);
+	fp=fopen(filename, openmode);
+	if(!fp)
+		return ferror(fp);
+	if(strchr(openmode, 'b'))
+		while( fread(&e, sizeof(ElemType), 1, fp)==1 ){
+			ListInsert(L, ++len, e);
+				if( feof(fp) )
+					break;
+		}
+	else
+		while( fscanf(fp,"%d",&e)>0 ){
+			ListInsert(L, ++len, e);
+			if( feof(fp) )
+				break;
+		}
+	if(fclose(fp))
+		return ferror(fp);
+	return -520;
+}
 
 #endif

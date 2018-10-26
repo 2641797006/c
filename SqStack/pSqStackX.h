@@ -28,9 +28,6 @@ struct{
 }__P_SqStack_struct__={0};
 #define S (&__P_SqStack_struct__)
 
-QWORD push_err=0;
-QWORD pop_err=0;
-
 QWORD InitStack()
 {
 	S->base=(QWORD*)malloc(STACK_INIT_SIZE*sizeof(QWORD));
@@ -41,44 +38,42 @@ QWORD InitStack()
 	return 0;
 }
 
-QWORD ExpandStack(QWORD n)
+void DestroyStack()
 {
+	free(S->base);
+}
+
+QWORD Ppush(QWORD _, ...)
+{
+	void* p;
+	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
 	*S->base=S->top-S->base;
-	if(*S->base+n<=S->stacksize)
-		return 0;
-	QWORD* p=(QWORD*)realloc(S->base, S->stacksize+STACKINCREMENT+1);
-	if(!p){
-		push_err=-1;
-		return -1;
+	if(*S->base+size>S->stacksize){
+		p=(void*)realloc(S->base, sizeof(QWORD)*(S->stacksize+1+STACKINCREMENT+size));
+		if(!p)
+			return -1;
+		S->base=(QWORD*)p;
+		S->top=S->base+*S->base;
+		S->stacksize+=(STACKINCREMENT+size);		
 	}
-	S->base=p;
-	S->top=S->base+*S->base;
-	S->stacksize+=STACKINCREMENT;
+	p = _>sizeof(QWORD) ? (void*)*(&_+1) : (void*)(&_+1);
+	memcpy(S->top+1, p, _);
+	S->top+=size;
 	return 0;
 }
 
-#define push(value){\
-	QWORD n=(sizeof(value)+sizeof(QWORD)-1)/sizeof(QWORD);\
-	if(!ExpandStack(n)){\
-		inline void Pmemcpy(void* _, ...)\
-		{\
-			_ = sizeof(value)>sizeof(QWORD) ? (void*)*(&_+1) : &_+1;\
-			memcpy(__P_SqStack_struct__.top+1, _, sizeof(value));\
-		}\
-		Pmemcpy(NULL, value);\
-		__P_SqStack_struct__.top+=n;\
-	}\
+QWORD Ppop(QWORD _, void* address)
+{
+	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
+	if(S->top-S->base<size)
+		return -1;
+	memcpy(address, S->top-size+1, _);
+	S->top-=size;
+	return 0;
 }
 
-#define pop(address){\
-	QWORD n=(sizeof(*address)+sizeof(QWORD)-1)/sizeof(QWORD);\
-	if(__P_SqStack_struct__.top-__P_SqStack_struct__.base>=n){\
-		memcpy(address, __P_SqStack_struct__.top-n+1, sizeof(*address));\
-		__P_SqStack_struct__.top-=n;\
-	}\
-	else\
-		pop_err=-1;\
-}
+#define push(value) Ppush(sizeof(value), value)
+#define pop(address) Ppop(sizeof(*address), address)
 
 #define Push(x) push(x)
 #define Pop(x) pop(x)

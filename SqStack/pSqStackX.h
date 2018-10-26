@@ -73,7 +73,7 @@ QWORD Ppop(QWORD _, void* address)
 }
 
 #define push(value) Ppush(sizeof(value), value)
-#define pop(address) Ppop(sizeof(*address), address)
+#define pop(address) Ppop(sizeof(*(address)), (void*)(address))
 
 #define Push(x) push(x)
 #define Pop(x) pop(x)

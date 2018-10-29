@@ -1,24 +1,29 @@
 #ifndef _PSTRUCT_H_
 #define _PSTRUCT_H_
 
-#define _1p unsigned char
-#define _2p unsigned short
-#define _4p unsigned long
-#define _8p unsigned long long
-
-
+#ifndef _PTYPE_H_
+#include <__pink/ptype.h>
+#endif
 
 typedef struct{
 	_1p word[64];
 	_8p flag;
 	_8p reserve;
-	_8p version;
-	_8p versionx;
+	_4p version;
+	_4p versionx;
+	_4p update_v;
+	_4p update_vx;
 }_WH;
 
-
-
-
+typedef struct{
+	_4p flag;
+	_4p reserve;
+	_4p execute;
+	_4p important;
+	_4p id;
+	_4p idx;
+	_8p overmem;
+}_WHEXE;
 
 
 

@@ -100,7 +100,7 @@ int ListDelete(SqList* L, int i, ElemType* pe)
 	return 0;
 }
 
-typedef void (*PrintElem)(ElemType* pe);
+typedef void (*PrintElem)(ElemType*);
 
 void PrintList(SqList* L, PrintElem printelem)
 {

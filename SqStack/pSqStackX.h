@@ -43,6 +43,44 @@ void DestroyStack()
 	free(S->base);
 }
 
+void ClearStack()
+{
+	S->top=S->base;
+}
+
+QWORD StackEmpty()
+{
+	if(S->top==S->base)
+		return 1;
+	return 0;
+}
+
+QWORD StackLength()
+{
+	return S->top-S->base;
+}
+
+QWORD PGetTop(QWORD _, void* address)
+{
+	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
+	if(S->top-S->base<size)
+		return -1;
+	memcpy(address, S->top-size+1, _);
+	return 0;
+}
+
+#define GetTop(address) PGetTop(sizeof(*(address)), (void*)(address))
+
+QWORD* GetTopP()
+{
+	return S->top;
+}
+
+void SetTopP(void* p)
+{
+	S->top=p;
+}
+
 QWORD Ppush(QWORD _, ...)
 {
 	void* p;

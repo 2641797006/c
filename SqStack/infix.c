@@ -15,7 +15,8 @@ int main(int argc)
 
 	int n, ret, len;
 	double d, result;
-	char str[2304], tail[4096], *ps=str, *pt=tail;
+	char str[2304], tail_buf[4096], *tail=tail_buf+1, *ps=str, *pt=tail;
+	*tail_buf='\n';
 	printf("WH::中缀表达式计算\n官网: https://2641797006.github.io/html/\n开源: https://2641797006.github.io/html/project/SqStack.html\n\n");
 
 	while(1)
@@ -23,19 +24,19 @@ int main(int argc)
 		stdin->_cnt=0;
 		stdin->_ptr=stdin->_base;
 		n=0, *str=0, *tail=0;
-		ps=str, pt=tail;
+		ps=str, pt=tail_buf;
 		printf(">>> ");
 
 		ret=scanf("%4000[^\n]%n", tail, &n);
 		if(n==0||ret<=0)
 			continue;
-		len=n;
+		len=n+1;
 		do{
-			sscanf(pt, "%256[0-9.+*-/^()]%n", ps, &n);
+			sscanf(pt, "%*[^0-9.+*-/^()]%n", &n);
 			pt+=n;
 			if((len-=n)<=0)
 				break;
-			sscanf(pt, "%*[^0-9.+*-/^()]%n", &n);
+			sscanf(pt, "%256[0-9.+*-/^()]%n", ps, &n);
 			pt+=n;
 			if((len-=n)<=0)
 				break;
@@ -53,7 +54,7 @@ int main(int argc)
 		SetTopP(bp);
 
 		if(argc>1){
-			printf("str=%s\n", str);
+			printf("中缀表达式: %s\n", str);
 			printf("后缀表达式: %s\n", tail);
 		}
 		bp=GetTopP();

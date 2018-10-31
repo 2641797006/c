@@ -93,11 +93,23 @@ int InfixToSuffix(char* infix, char* suffix)
 				push(*pin);
 				signs=0;			
 			break;
-*/			case'*': case'/': case '^':
+*/			case'*': case'/': 
 				yx=precede(*pin);
 				do{
 					GetTop(&c);
 					if(precede(c)<=yx)
+						pop(psuf++);
+					else
+						break;
+				}while(1);
+				push(*pin);
+				signs=0;
+			break;
+			case '^':
+				yx=precede(*pin);
+				do{
+					GetTop(&c);
+					if(precede(c)<yx)
 						pop(psuf++);
 					else
 						break;

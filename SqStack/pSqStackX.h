@@ -94,7 +94,13 @@ QWORD Ppush(QWORD _, ...)
 		S->top=S->base+*S->base;
 		S->stacksize+=(STACKINCREMENT+size);		
 	}
+
+#ifdef __GNUC__
 	p = _>sizeof(QWORD) ? (void*)*(&_+1) : (void*)(&_+1);
+#else
+	p = (void*)(&_+1);
+#endif
+
 	memcpy(S->top+1, p, _);
 	S->top+=size;
 	return 0;

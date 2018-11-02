@@ -16,6 +16,8 @@
 #endif
 #endif
 
+#define DWORD unsigned long
+
 typedef unsigned long long QWORD;
 
 #define STACK_INIT_SIZE	128
@@ -28,7 +30,7 @@ struct{
 }__P_SqStack_struct__={0};
 #define S (&__P_SqStack_struct__)
 
-QWORD InitStack()
+DWORD InitStack()
 {
 	S->base=(QWORD*)malloc(STACK_INIT_SIZE*sizeof(QWORD));
 	if(!S->base)
@@ -48,24 +50,24 @@ void ClearStack()
 	S->top=S->base;
 }
 
-QWORD StackEmpty()
+DWORD StackEmpty()
 {
 	if(S->top==S->base)
 		return 1;
 	return 0;
 }
 
-QWORD StackLength()
+DWORD StackLength()
 {
 	return S->top-S->base;
 }
 
-QWORD PGetTop(QWORD _, void* address)
+DWORD PGetTop(QWORD _, void* address)
 {
 	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
 	if(S->top-S->base<size)
 		return -1;
-	memcpy(address, S->top-size+1, _);
+	memcpy(address, S->top-size+1, (DWORD)_);
 	return 0;
 }
 
@@ -81,7 +83,7 @@ void SetTopP(void* p)
 	S->top=p;
 }
 
-QWORD Ppush(QWORD _, ...)
+DWORD Ppush(QWORD _, ...)
 {
 	void* p;
 	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
@@ -101,17 +103,17 @@ QWORD Ppush(QWORD _, ...)
 	p = (void*)(&_+1);
 #endif
 
-	memcpy(S->top+1, p, _);
+	memcpy(S->top+1, p, (DWORD)_);
 	S->top+=size;
 	return 0;
 }
 
-QWORD Ppop(QWORD _, void* address)
+DWORD Ppop(QWORD _, void* address)
 {
 	QWORD size=(_+sizeof(QWORD)-1)/sizeof(QWORD);
 	if(S->top-S->base<size)
 		return -1;
-	memcpy(address, S->top-size+1, _);
+	memcpy(address, S->top-size+1, (DWORD)_);
 	S->top-=size;
 	return 0;
 }
@@ -119,8 +121,7 @@ QWORD Ppop(QWORD _, void* address)
 #define push(value) Ppush(sizeof(value), value)
 #define pop(address) Ppop(sizeof(*(address)), (void*)(address))
 
-#define Push(x) push(x)
-#define Pop(x) pop(x)
-
 #undef S
+#undef DWORD
+
 #endif

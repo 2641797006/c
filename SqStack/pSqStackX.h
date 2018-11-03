@@ -83,6 +83,24 @@ void SetTopP(void* p)
 	S->top=p;
 }
 
+DWORD EnoughStack(QWORD space)
+{
+	if(!S->base)
+		InitStack();
+	void* p;
+	*S->base=S->top-S->base;
+	if(S->stacksize-*S->base<space){
+		p=(void*)realloc(S->base, sizeof(QWORD)*(S->stacksize+1+STACKINCREMENT+space));
+		if(!p)
+			return -1;
+		S->base=(QWORD*)p;
+		S->top=S->base+*S->base;
+		S->stacksize+=(STACKINCREMENT+space);
+		return 1;
+	}
+	return 0;
+}
+
 DWORD Ppush(QWORD _, ...)
 {
 	void* p;
@@ -118,8 +136,24 @@ DWORD Ppop(QWORD _, void* address)
 	return 0;
 }
 
+#ifdef __GNUC__
+#define push(value) sizeof(value)>sizeof(QWORD) \
+		? Ppush(sizeof(value), value) \
+		: ( EnoughStack(1), memcpy(++__P_SqStack_struct__.top, &value, (int)sizeof(value)), 1 )
+#else
 #define push(value) Ppush(sizeof(value), value)
+#endif
+
 #define pop(address) Ppop(sizeof(*(address)), (void*)(address))
+
+DWORD PrintStack()
+{
+	QWORD* p=S->top;
+	printf("---->>>TOP<<<<----\n");
+	while(p!=S->base)
+		printf("0x%016llX\n", *p--);
+	printf("---->>>BASE<<<----\n");
+}
 
 #undef S
 #undef DWORD

@@ -19,6 +19,7 @@ int InitStack();
 int push(value);
 int pop(address);
 int GetTop(address);
+void PrintStack();
 
 QWORD* GetTopP();
 void SetTopP(void* p);
@@ -57,6 +58,10 @@ int GetTop(address);
 /*	获取栈顶数据到address地址处
 	此函数与 pop(address) 类似
 	但此函数不会移动栈顶指针
+*/
+
+void PrintStack();
+/*	形象地输出栈
 */
 
 /***************************************************/

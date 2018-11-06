@@ -8,6 +8,8 @@
 #endif
 #endif
 
+int __MATRIX__;
+
 typedef struct{
 	int row;
 	int col;
@@ -72,15 +74,58 @@ int MatrixTraverse(MATRIX* mat, int (*visit)(float*, int, int))
 	return 0;
 }
 
+int InverseNum(int* a, int n)
+{
+	int *p, *q, *t=a+n-1, num=0;
+	for(p=a+1;p<=t;p++)
+		for(q=a;q<p;q++)
+			if(*q>*p)
+				num++;
+	return num;
+}
 
-
-
-
-
-
-
-
-
+float DetValue(MATRIX* mat)
+{
+	float** bp=mat->bp;
+	double det=0, product;
+	int order=mat->row;
+	if(mat->col!=order){
+		__MATRIX__=-1;
+		return 0;
+	}
+	int arr[order+2], *a=arr+1, *t=a+order-1, *p, *q, i, x=0x2, y=0, z;
+	for(p=a;p<=t;p++)
+		*p=p-a;
+	arr[0]=-1;
+	a[order]=-1;
+	int NextOrdinal()
+	{
+		p=t;
+		while(*p<*--p);
+		if(p<a)
+			return -1;
+		q=p;
+		while(*++q>*p);
+		i=*--q, *q=*p, *p=i;
+		p++, q=t;
+		while(p<q)
+			i=*p, *p++=*q, *q--=i;
+	}
+	do{
+		for(p=a,product=1,i=0; p<=t; p++,i++)
+			product*=*(*(bp+i)+*p);
+#ifndef _PQUICK_
+		if(InverseNum(a, order)%2==0)
+#else
+		if(z=(x+=1)&0x2, y++, y>=0x18 ? (x = (y=0, x>0x19) ? 0 : 2) : 0, z)
+#endif
+			det+=product;
+		else
+			det-=product;
+	}while(NextOrdinal()>=0);
+	__MATRIX__=0;
+	return (float)det;
+}
 
 
 

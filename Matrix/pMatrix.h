@@ -166,11 +166,16 @@ double DetValue(MATRIX* mat)
 }
 #endif
 
-MATRIX* TransposeMatrix(MATRIX *mat)
+MATRIX* TransposeMatrix(MATRIX* mat, MATRIX* rmat)
 {
-	MATRIX* m=(MATRIX*)malloc(sizeof(MATRIX));
-	if( !m || InitMatrix(m, mat->col, mat->row) )
-		return NULL;
+	MATRIX* m;
+	if(!rmat){
+		m=(MATRIX*)malloc(sizeof(MATRIX));
+		if( !m || InitMatrix(m, mat->col, mat->row) )
+			return NULL;
+	}
+	else
+		m=rmat;
 	int i, j;
 	for(i=0;i<m->row;i++)
 		for(j=0;j<m->col;j++)
@@ -178,14 +183,17 @@ MATRIX* TransposeMatrix(MATRIX *mat)
 	return m;
 }
 
-MATRIX* AgebCoft(MATRIX* mat, int row, int col)
+MATRIX* CofactorMatrix(MATRIX* mat, int row, int col, MATRIX* rmat)
 {
 	row--, col--;
-	if(mat->row!=mat->col || row<0||row>=mat->row)
-		return NULL;
-	MATRIX* m=(MATRIX*)malloc(sizeof(MATRIX));
-	if( !m || InitMatrix(m, mat->row-1, mat->col-1) )
-		return NULL;
+	MATRIX* m;
+	if(!rmat){
+		m=(MATRIX*)malloc(sizeof(MATRIX));
+		if( !m || InitMatrix(m, mat->row-1, mat->col-1) )
+			return NULL;
+	}
+	else
+		m=rmat;
 	int i, j, r=0, c=0;
 	for(i=0;i<mat->row;i++){
 		if(i==row){
@@ -217,8 +225,6 @@ MATRIX* CloneMatrix(MATRIX* mat)
 
 int MatrixAdd(MATRIX* m1, MATRIX* m2)
 {
-	if(m1->row!=m2->row || m1->col!=m2->col)
-		return -1;
 	int i, j;
 	for(i=0;i<m1->row;i++)
 		for(j=0;j<m1->col;j++)
@@ -228,8 +234,6 @@ int MatrixAdd(MATRIX* m1, MATRIX* m2)
 
 int MatrixSub(MATRIX* m1, MATRIX* m2)
 {
-	if(m1->row!=m2->row || m1->col!=m2->col)
-		return -1;
 	int i, j;
 	for(i=0;i<m1->row;i++)
 		for(j=0;j<m1->col;j++)
@@ -256,9 +260,40 @@ MATRIX* MatrixMul(MATRIX* m1, MATRIX* m2)
 	return m;
 }
 
+MATRIX* AdjointMatrix(MATRIX* mat)
+{
+	int i, j;
+	MATRIX *adm, *acm;
+	adm=(MATRIX*)malloc(sizeof(MATRIX));
+	acm=(MATRIX*)malloc(sizeof(MATRIX));
+	i=InitMatrix(adm, mat->row, mat->col);
+	j=InitMatrix(acm, mat->row-1, mat->col-1);
+	if(!adm||!acm || i||j)
+		return NULL;
+	for(i=0;i<adm->row;i++)
+		for(j=0;j<adm->col;j++)
+			*(*(adm->bp+i)+j)=( ((i+j)%2==0) ? 1 : -1 )*DetValue(CofactorMatrix(mat, j+1, i+1, acm));
+	DestroyMatrix(acm);
+	free(acm);
+	return adm;
+}
 
-
-
+MATRIX* InverseMatrix(MATRIX* mat)
+{
+	double det;
+	MATRIX* m;
+	det=DetValue(mat);
+	if(det==0)
+		return NULL;
+	m=AdjointMatrix(mat);
+	if(!m)
+		return NULL;
+	int i, j;
+	for(i=0;i<m->row;i++)
+		for(j=0;j<m->col;j++)
+			*(*(m->bp+i)+j)/=det;
+	return m;
+}
 
 
 

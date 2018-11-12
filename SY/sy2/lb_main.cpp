@@ -61,6 +61,7 @@ int main()
 					L->Print(&PrintElem);
 			break;
 			case 'B':
+				cout<<"请输入第"<<L->Length()+1<<"个数据."<<endl;
 				ScanElem(&gun);
 				L->Insert(L->Length()+1, &gun);
 			break;
@@ -97,6 +98,7 @@ int main()
 					cout<<"位置错误\n";
 					break;
 				}
+				cout<<"请输入新数据:\n";
 				ScanElem(&gun);
 				CopyElem( &L->GetElem(i)->data, &gun);
 				cout<<"已修改第\""<<i<<"个数据\n";
@@ -147,7 +149,6 @@ void PrintElem(ElemType* e)
 
 void ScanElem(ElemType* e)
 {
-	cout<<"请输入第"<<L->Length()+1<<"个数据."<<endl;
 	cout<<"枪械名称: ";
 	cin.get(e->name, 16, '\n');
 	ResetCin();

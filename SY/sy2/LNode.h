@@ -178,7 +178,7 @@ void LNode::Print(void (*PrintElem)(ElemType*))
 	LNode* p=next;
 	while(p=p->next)
 		PrintElem(&p->data);
-	printf("\n");
+	std::cout<<std::endl;
 }
 
 }

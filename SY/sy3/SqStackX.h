@@ -121,7 +121,8 @@ DWORD Ppush(QWORD _, ...)
 	p = (void*)(&_+1);
 #endif
 
-	memcpy(S->top+1, p, (DWORD)_);
+	*++S->top=0;
+	memcpy(S->top, p, (DWORD)_);
 	S->top+=size;
 	return 0;
 }

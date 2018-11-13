@@ -223,22 +223,20 @@ MATRIX* CloneMatrix(MATRIX* mat)
 	return m;
 }
 
-int MatrixAdd(MATRIX* m1, MATRIX* m2)
+void MatrixAdd(MATRIX* m1, MATRIX* m2)
 {
 	int i, j;
 	for(i=0;i<m1->row;i++)
 		for(j=0;j<m1->col;j++)
 			*(*(m1->bp+i)+j)+=*(*(m2->bp+i)+j);
-	return 0;
 }
 
-int MatrixSub(MATRIX* m1, MATRIX* m2)
+void MatrixSub(MATRIX* m1, MATRIX* m2)
 {
 	int i, j;
 	for(i=0;i<m1->row;i++)
 		for(j=0;j<m1->col;j++)
 			*(*(m1->bp+i)+j)-=*(*(m2->bp+i)+j);
-	return 0;
 }
 
 MATRIX* MatrixMul(MATRIX* m1, MATRIX* m2)
@@ -295,7 +293,23 @@ MATRIX* InverseMatrix(MATRIX* mat)
 	return m;
 }
 
-
+void PrintMatrixS(MATRIX* mat)
+{
+	char c;
+	int i, j, row, col;
+	double **bp, *p, d;
+	bp=mat->bp;
+	row=mat->row;
+	col=mat->col;
+	for(i=0;i<row;i++){
+		p=*(bp+i);
+		for(j=0;j<col;j++){
+			*(p+j)<0 ? (c='-', d=-*(p+j)) : (c=' ', d=*(p+j)) ;
+			printf("%c%-6.6G ", c, d);
+		}
+		printf("\n");
+	}
+}
 
 
 

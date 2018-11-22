@@ -123,7 +123,7 @@ DWORD Ppush(QWORD _, ...)
 
 	*++S->top=0;
 	memcpy(S->top, p, (DWORD)_);
-	S->top+=size;
+	S->top+=(size-1);
 	return 0;
 }
 

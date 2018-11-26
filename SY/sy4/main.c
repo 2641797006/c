@@ -37,6 +37,7 @@ int main()
 	target=malloc(0x400);
 	if(!filepath||!buffer||!target)
 		return -1;
+	*(QWORD*)buffer=0;
 	ptr=buffer, length=0;
 	strcpy(filepath, env);
 	strcat(filepath, dir[0]);
@@ -47,7 +48,6 @@ int main()
 	strcat(filepath, getenv("USERNAME"));
 	strcat(filepath, ".txt");
 	fp=fopen(filepath, "w+");
-	printf("WH::源代码: https://2641797006.github.io/html/\n\n");
 
 	while(1)
 	{
@@ -186,6 +186,7 @@ BOOL WINAPI CtrlProc(DWORD dwCtrlType)
 		case 0:
 		case 1:
 		case 2:
+			fprintf(fp, "%s%s\n%s", "Hello, ", getenv("USERNAME"), ">>>WH::源代码: https://2641797006.github.io/html/\n>>>WH::下面就是你输入到文件中的数据哟:\n");
 			fprintf(fp, "%s", buffer);
 			fclose(fp);
 			ShellExecute(NULL, "open", "notepad.exe", filepath, NULL, SW_SHOWNORMAL);
